@@ -30,70 +30,74 @@ Publish the config file & edit it with your Jackrabbit details:
 
 ### JCR Session
 
-	// Init session
-    $session = \App::make('phpcr.session');
+```php
+// Init session
+$session = \App::make('phpcr.session');
 
-	// Save a new testNode
-    $rootNode = $session->getNode("/");
-    $testNode = $rootNode->addNode("testNode");
-    $session->save();
-    
-	// Get the newly created node
-    $testNode = $session->getNode("/testNode");
-    dd($testNode);
+// Save a new testNode
+$rootNode = $session->getNode("/");
+$testNode = $rootNode->addNode("testNode");
+$session->save();
+
+// Get the newly created node
+$testNode = $session->getNode("/testNode");
+dd($testNode);
+```
 
 ## Document Manager
 
 Create a new model :
 
-    <?php namespace App\Models;
-    
-    use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCR;
-    
+```php
+<?php namespace App\Models;
+
+use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCR;
+
+/**
+ * @PHPCR\Document(referenceable=true)
+ */
+class Post
+{
+
     /**
-     * @PHPCR\Document(referenceable=true)
+     * @PHPCR\Uuid()
      */
-    class Post
+    protected $uuid;
+
+    /**
+     * @PHPCR\Id()
+     */
+    protected $slug;
+
+    /**
+     * @PHPCR\ParentDocument()
+     */
+    protected $parent;
+
+    /**
+     * @PHPCR\NodeName
+     */
+    protected $title;
+
+    public function setParent($parent)
     {
-    
-        /**
-         * @PHPCR\Uuid()
-         */
-        protected $uuid;
-    
-        /**
-         * @PHPCR\Id()
-         */
-        protected $slug;
-    
-        /**
-         * @PHPCR\ParentDocument()
-         */
-        protected $parent;
-    
-        /**
-         * @PHPCR\NodeName
-         */
-        protected $title;
-    
-        public function setParent($parent)
-        {
-            $this->parent = $parent;
-            return $this;
-        }
-    
-        public function setTitle($title)
-        {
-            $this->title = $title;
-            return $this;
-        }
-    
-        public function getTitle()
-        {
-            return $this->title;
-        }
-    
+        $this->parent = $parent;
+        return $this;
     }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+}
+```
     
 Register your new type with :
 
@@ -102,23 +106,25 @@ Register your new type with :
 
 Use your model wherever you want :
 
-    // Get the document manager
-    $dm = \App::make('phpcr.manager');
+```php
+// Get the document manager
+$dm = \App::make('phpcr.manager');
 
-    // Get the root node
-    $root = $dm->find(null, '/');
+// Get the root node
+$root = $dm->find(null, '/');
 
-    // Create a post
-    $post = new Post();
-    $post->setParent($root);
-    $post->setTitle('Example Post');
+// Create a post
+$post = new Post();
+$post->setParent($root);
+$post->setTitle('Example Post');
 
-    $dm->persist($post);
-    $dm->flush();*/
+$dm->persist($post);
+$dm->flush();*/
 
-    $post = $dm->find(null, 'Example Post');
-    dd($post);
-    
+$post = $dm->find(null, 'Example Post');
+dd($post);
+```
+
 # Credits
 
 Based on the work of [Workers](https://github.com/Workers/laravel-phpcr-odm)
