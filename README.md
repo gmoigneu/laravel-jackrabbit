@@ -119,7 +119,7 @@ $post->setParent($root);
 $post->setTitle('Example Post');
 
 $dm->persist($post);
-$dm->flush();*/
+$dm->flush();
 
 $post = $dm->find(null, 'Example Post');
 dd($post);
